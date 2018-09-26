@@ -36,9 +36,14 @@
                         title: '系统首页'
                     },
                     {
+                        icon: 'el-icon-setting',
+                        index: 'treeEdit',
+                        title: '分类编辑'
+                    },
+                    {
                         icon: 'el-icon-tickets',
-                        index: 'table',
-                        title: '基础表格'
+                        index: 'pageArticle',
+                        title: '文章列表'
                     },
                     {
                         icon: 'el-icon-message',

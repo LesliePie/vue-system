@@ -1,6 +1,6 @@
 <template>
     <div class="login-wrap">
-        <div class="ms-title">后台管理系统</div>
+        <div class="ms-title">师乎网后台管理系统</div>
         <div class="ms-login">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="username">
@@ -12,19 +12,20 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
             </el-form>
         </div>
     </div>
 </template>
 
 <script>
+    import axios from 'axios'
+    import store from '../../main.js'
     export default {
         data: function(){
             return {
                 ruleForm: {
-                    username: 'admin',
-                    password: '123123'
+                    username: '',
+                    password: ''
                 },
                 rules: {
                     username: [
@@ -40,10 +41,24 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        localStorage.setItem('ms_username',this.ruleForm.username);
-                        this.$router.push('/');
+                        //提交service
+                        axios.post('/admin/login',{
+                            login:this.ruleForm.username,
+                            password:this.ruleForm.password,
+                        }).then(res=>  {
+                            if (res.data.code=="000000"){
+                                let token=res.data.data;
+                                localStorage.setItem("token",token);
+                                this.$router.push('/');
+                            } else {
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(function (error) {
+                            if (error.response){
+                                 console.log(error.response.msg)
+                            }
+                        })
                     } else {
-                        console.log('error submit!!');
                         return false;
                     }
                 });

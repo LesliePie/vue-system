@@ -45,26 +45,29 @@
 </template>
 <script>
     import bus from '../common/bus';
+    import axios from 'axios';
+    import store from '../../main.js'
     export default {
         data() {
             return {
                 collapse: false,
                 fullscreen: false,
-                name: 'linxin',
-                message: 2
+                name: '管理员',
+                message: 2,
+                user:this.$store.getters.user
             }
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
+                return this.user.name ? this.user.name : this.name;
             }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                    localStorage.removeItem('user')
+                    localStorage.removeItem('token')
                     this.$router.push('/login');
                 }
             },

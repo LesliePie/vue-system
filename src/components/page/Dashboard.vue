@@ -1,3 +1,4 @@
+
 <template>
     <div>
         <el-row :gutter="20">
@@ -5,11 +6,12 @@
                 <el-row>
                     <el-col>
                         <el-card shadow="hover" class="mgb20">
+                            <!--用户头像页-->
                             <div class="user-info">
                                 <img src="static/img/img.jpg" class="user-avator" alt="">
                                 <div class="user-info-cont">
-                                    <div class="user-info-name">{{name}}</div>
-                                    <div>{{role}}</div>
+                                    <div class="user-info-name">{{user.name}}</div>
+                                    <div v-for="item in role">{{item}}</div>
                                 </div>
                             </div>
                             <div class="user-info-list">上次登录时间：<span>2018-01-01</span></div>
@@ -17,7 +19,7 @@
                         </el-card>
                         <el-card shadow="hover">
                             <div slot="header" class="clearfix">
-                                <span>语言详情</span>
+                                <span>网站统计</span>
                             </div>
                             Vue
                             <el-progress :percentage="57.2" color="#42b983"></el-progress>
@@ -32,14 +34,15 @@
                 </el-row>
             </el-col>
             <el-col :span="16">
+                <!--待办页面-->
                 <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-1">
                                 <i class="el-icon-view grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">1234</div>
-                                    <div>用户访问量</div>
+                                    <div class="grid-num">{{userCount}}</div>
+                                    <div>总用户数</div>
                                 </div>
                             </div>
                         </el-card>
@@ -49,8 +52,8 @@
                             <div class="grid-content grid-con-2">
                                 <i class="el-icon-message grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
-                                    <div>系统消息</div>
+                                    <div class="grid-num">{{allResource}}</div>
+                                    <div>总资源数量</div>
                                 </div>
                             </div>
                         </el-card>
@@ -60,8 +63,8 @@
                             <div class="grid-content grid-con-3">
                                 <i class="el-icon-goods grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
-                                    <div>数量</div>
+                                    <div class="grid-num">{{waitCheckResource}}</div>
+                                    <div>待审核资源</div>
                                 </div>
                             </div>
                         </el-card>
@@ -69,7 +72,7 @@
                 </el-row>
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
                     <div slot="header" class="clearfix">
-                        <span>待办事项</span>
+                        <span>网站公告</span>
                         <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
                     </div>
                     <el-table :data="todoList" :show-header="false" height="304" style="width: 100%;font-size:14px;">
@@ -98,11 +101,19 @@
 </template>
 
 <script>
+    import axios from 'axios';
+    import store from '../../main.js'
     export default {
         name: 'dashboard',
+        created(){
+            this.getStatics();
+        },
         data() {
             return {
-                name: localStorage.getItem('ms_username'),
+                user: this.$store.getters.user,
+                userCount:0,
+                allResource:0,
+                waitCheckResource:0,
                 todoList: [
                     {
                         title: '今天要修复100个bug',
@@ -132,7 +143,22 @@
         },
         computed: {
             role() {
-                return this.name === 'admin' ? '超级管理员' : '普通用户';
+                let roles=this.user.roles;
+                return roles;
+            }
+        },
+        methods:{
+            getStatics(){
+                axios.get('/admin/statics/bannerStatics',{}).then(res=>{
+                    if (res.data.code=="000000") {
+                        console.log(res.data)
+                        this.userCount=res.data.data.allUserCount;
+                        this.allResource=res.data.data.allResource;
+                        this.waitCheckResource=res.data.data.waitCheckedRes;
+                    }else if(res.data.result=="999999"){
+                        this.$router.push('/');
+                    }
+                })
             }
         }
     }

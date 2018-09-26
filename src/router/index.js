@@ -20,9 +20,14 @@ export default new Router({
                     meta: { title: '系统首页' }
                 },
                 {
-                    path: '/table',
-                    component: resolve => require(['../components/page/BaseTable.vue'], resolve),
-                    meta: { title: '基础表格' }
+                    path:'/treeEdit',
+                    component: resolve => require(['../components/page/TreePage.vue'],resolve),
+                    meta:{title:'字典编辑'}
+                },
+                {
+                    path: '/pageArticle',
+                    component: resolve => require(['../components/page/PageArticle.vue'], resolve),
+                    meta: { title: '文章/资源列表' }
                 },
                 {
                     path: '/tabs',
@@ -44,13 +49,13 @@ export default new Router({
                     // markdown组件
                     path: '/markdown',
                     component: resolve => require(['../components/page/Markdown.vue'], resolve),
-                    meta: { title: 'markdown编辑器' }    
+                    meta: { title: 'markdown编辑器' }
                 },
                 {
                     // 图片上传组件
                     path: '/upload',
                     component: resolve => require(['../components/page/Upload.vue'], resolve),
-                    meta: { title: '文件上传' }   
+                    meta: { title: '文件上传' }
                 },
                 {
                     // vue-schart组件

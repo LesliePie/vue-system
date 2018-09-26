@@ -3,6 +3,30 @@
         <router-view></router-view>
     </div>
 </template>
+<script>
+    export default {
+        name:'app',
+        data(){
+            return {
+                user: { //保存用户信息
+                    login: null,
+                    id:null,
+                    name:null,
+                    roles: [],
+                    resources: []
+                }
+            }
+        },
+        mounted(){
+            this.getUserInfo();
+        },
+        methods:{
+            getUserInfo(){
+
+            }
+        }
+    }
+</script>
 <style>
     @import "../static/css/main.css";
     @import "../static/css/color-dark.css";     /*深色主题*/
