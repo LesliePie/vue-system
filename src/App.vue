@@ -16,14 +16,6 @@
                     resources: []
                 }
             }
-        },
-        mounted(){
-            this.getUserInfo();
-        },
-        methods:{
-            getUserInfo(){
-
-            }
         }
     }
 </script>

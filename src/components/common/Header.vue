@@ -54,19 +54,18 @@
                 fullscreen: false,
                 name: '管理员',
                 message: 2,
-                user:this.$store.getters.user
+                user:{}
             }
         },
         computed:{
             username(){
-                return this.user.name ? this.user.name : this.name;
+                return this.user.name
             }
         },
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('user')
                     localStorage.removeItem('token')
                     this.$router.push('/login');
                 }
@@ -105,9 +104,11 @@
             }
         },
         mounted(){
+            this.user=this.$store.getters.user;
             if(document.body.clientWidth < 1500){
                 this.collapseChage();
-            }
+            };
+
         }
     }
 </script>

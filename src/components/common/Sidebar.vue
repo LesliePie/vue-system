@@ -45,19 +45,47 @@
                         index: 'pageArticle',
                         title: '文章列表'
                     },
+
                     {
-                        icon: 'el-icon-message',
-                        index: 'tabs',
-                        title: 'tab选项卡'
+                        icon: 'el-icon-menu',
+                        index: '2',
+                        title: '圈子管理',
+                        subs:[
+                            {
+                                index: 'circleTabs',
+                                title:'圈子列表'
+                            },
+                            {
+                                index:'articleTabs',
+                                title:'心情/看法列表'
+                            }
+                        ]
+                    },
+                    {
+                        icon: 'el-icon-star-on',
+                        index: 'recommendTabs',
+                        title: '推荐管理'
                     },
                     {
                         icon: 'el-icon-date',
                         index: '3',
-                        title: '表单相关',
+                        title: '用户相关',
                         subs: [
                             {
-                                index: 'form',
-                                title: '基本表单'
+                                index: 'teacherAuthorization',
+                                title: '名师认证申请'
+                            },
+                            {
+                                index: 'notifyTabs',
+                                title: '消息通知'
+                            },
+                            {
+                                index: 'pageUser',
+                                title: '用户列表'
+                            },
+                            {
+                                index: 'feedback',
+                                title: '用户反馈'
                             },
                             {
                                 index: 'editor',

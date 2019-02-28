@@ -17,7 +17,7 @@
                             <div class="user-info-list">上次登录时间：<span>2018-01-01</span></div>
                             <div class="user-info-list">上次登录地点：<span>东莞</span></div>
                         </el-card>
-                        <el-card shadow="hover">
+                       <!-- <el-card shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>网站统计</span>
                             </div>
@@ -29,7 +29,7 @@
                             <el-progress :percentage="11.9"></el-progress>
                             HTML
                             <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
-                        </el-card>
+                        </el-card>-->
                     </el-col>
                 </el-row>
             </el-col>
@@ -70,7 +70,7 @@
                         </el-card>
                     </el-col>
                 </el-row>
-                <el-card shadow="hover" :body-style="{ height: '304px'}">
+               <!-- <el-card shadow="hover" :body-style="{ height: '304px'}">
                     <div slot="header" class="clearfix">
                         <span>网站公告</span>
                         <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
@@ -93,7 +93,7 @@
                             </template>
                         </el-table-column>
                     </el-table>
-                </el-card>
+                </el-card>-->
 
             </el-col>
         </el-row>
@@ -101,16 +101,16 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import store from '../../main.js'
+    import request from '../../api/statics';
     export default {
         name: 'dashboard',
-        created(){
+        mounted(){
+            this.user=this.$store.getters.user
             this.getStatics();
         },
         data() {
             return {
-                user: this.$store.getters.user,
+                user:{},
                 userCount:0,
                 allResource:0,
                 waitCheckResource:0,
@@ -149,14 +149,13 @@
         },
         methods:{
             getStatics(){
-                axios.get('/admin/statics/bannerStatics',{}).then(res=>{
+                request.banner().then(res=>{
                     if (res.data.code=="000000") {
-                        console.log(res.data)
                         this.userCount=res.data.data.allUserCount;
                         this.allResource=res.data.data.allResource;
                         this.waitCheckResource=res.data.data.waitCheckedRes;
-                    }else if(res.data.result=="999999"){
-                        this.$router.push('/');
+                    }else {
+                        this.$message.warning(res.data.msg)
                     }
                 })
             }

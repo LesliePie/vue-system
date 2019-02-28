@@ -13,6 +13,7 @@
     "axios": "^0.15.3",
     "babel-polyfill": "^6.23.0",
     "element-ui": "2.3.3",
+    "js-cookie": "^2.2.0",
     "liquor-tree": "^0.2.32",
     "mavon-editor": "^2.5.4",
     "vue": "^2.5.16",

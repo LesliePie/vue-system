@@ -19,7 +19,8 @@
 
 <script>
     import axios from 'axios'
-    import store from '../../main.js'
+    import service from '../../api/login'
+    import auth from '../../utils/auth';
     export default {
         data: function(){
             return {
@@ -42,12 +43,15 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         //提交service
-                        axios.post('/admin/login',{
+                        service.login({
                             login:this.ruleForm.username,
                             password:this.ruleForm.password,
                         }).then(res=>  {
                             if (res.data.code=="000000"){
-                                let token=res.data.data;
+                                let token=res.data.data.token;
+                                let user=res.data.data.user;
+                                this.$store.commit('updateUserInfo',user);
+                                auth.setToken(token);
                                 localStorage.setItem("token",token);
                                 this.$router.push('/');
                             } else {

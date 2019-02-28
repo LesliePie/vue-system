@@ -30,14 +30,39 @@ export default new Router({
                     meta: { title: '文章/资源列表' }
                 },
                 {
-                    path: '/tabs',
-                    component: resolve => require(['../components/page/Tabs.vue'], resolve),
-                    meta: { title: 'tab选项卡' }
+                  path:'/recommendTabs' ,
+                   component: resolve => require(['../components/page/Recommend.vue'] ,resolve),
+                  meta: { title :'推荐管理'}
                 },
                 {
-                    path: '/form',
-                    component: resolve => require(['../components/page/BaseForm.vue'], resolve),
-                    meta: { title: '基本表单' }
+                    path: '/feedback',
+                    component: resolve => require(['../components/page/FeedBack.vue'], resolve),
+                    meta: { title: '用户反馈' }
+                },
+                {
+                    path: '/notifyTabs',
+                    component: resolve => require(['../components/page/NotifyTabs.vue'], resolve),
+                    meta: { title: '消息通知' }
+                },
+                {
+                    path: '/circleTabs',
+                    component: resolve => require(['../components/page/CircleTabs.vue'], resolve),
+                    meta: { title: '圈子管理' }
+                },
+                {
+                    path: '/articleTabs',
+                    component: resolve => require(['../components/page/ArticleTabs.vue'], resolve),
+                    meta: { title: '心情/看法列表' }
+                },
+                {
+                    path: '/teacherAuthorization',
+                    component: resolve => require(['../components/page/teacherAuthorization.vue'], resolve),
+                    meta: { title: '名师认证申请' }
+                },
+                {
+                    path:'/pageUser',
+                    component:resolve => require(['../components/page/PageUser.vue'],resolve),
+                    meta: { title:'用户列表' }
                 },
                 {
                     // 富文本编辑器组件

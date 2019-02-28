@@ -5,7 +5,8 @@
         <el-container>
             <!--顶部容器-->
             <el-header>
-                头部
+                <!--<span @click="deletexx(testData,'x_0_1_0')">test</span>
+                头部-->
             </el-header>
             <!--主要区域-->
             <el-main>
@@ -94,8 +95,8 @@
                         active-color="#13ce66"
                         active-text="开启字典"
                         inactive-text="关闭字典"
-                        :active-value="activeDic"
-                        :inactive-value="inactiveDic"
+                        :active-value=0
+                        :inactive-value=1
                         inactive-color="#ff4949">
                     </el-switch>
                 </el-form-item>
@@ -123,6 +124,7 @@
     import { Loading } from 'element-ui';
     import VueCropper  from 'vue-cropperjs';
     import {formatUrl} from "../common/formatUrl.js";
+    import request from "../../api/ditionary";
     export default {
         name:"TreePage",
         watch: {
@@ -156,7 +158,7 @@
                 this.formData= {
                         id:null,
                         name:'',
-                        state:0,
+                        state:"0",
                         createTime:null,
                         updateTime:null,
                         createUserName:'',
@@ -206,7 +208,7 @@
                this.formData={
                         id:null,
                         name:'',
-                        state:1,
+                        state:"1",
                         createTime:null,
                         updateTime:null,
                         createUserName:'',
@@ -237,7 +239,7 @@
                         }
                     }
                     if (!data.createUserName){
-                        axios.get('admin/dictionary/'+data.id,{}).then(res=>{
+                        request.detail(data.id).then(res=>{
                             if (res.data.code="000000") {
                                 let dictionary=res.data.data;
                                 this.formData.createUserName=dictionary.createUserName;
@@ -267,16 +269,17 @@
                         fileData.append("state",this.formData.state);
                         fileData.append("file",this.formData.file);
                         if (this.formData.id){
-                            axios.patch("/admin/dictionary",fileData,{headers: {'Content-Type': 'multipart/form-data'}}).then(res=>{
+                            request.update(fileData).then(res=>{
                                 if (res.data.code="000000"){
                                     //关闭弹窗
                                     this.dialogFormVisible=false;
                                     this.isEdit=false;
+                                    this.cropImg=null;
                                     let node=this.$refs.tree2.getNode(this.formData.id);
                                     node.data.name=this.formData.name;
                                     node.data.state=this.formData.state;
                                     node.data.iconUrl=this.cropImg;
-                                    this.cropImg=null;
+
                                 } else {
                                     this.$message.warning(res.data.msg);
                                 }
@@ -287,7 +290,7 @@
                                 console.log("parentId",this.parentId)
                                 fileData.append("parentId",this.parentId);
                             }
-                            axios.put("/admin/dictionary",fileData,{headers:{'Content-Type': 'multipart/form-data'}}).then(res=>{
+                            request.add(fileData).then(res=>{
                                 if (res.data.code="000000"){
                                     //关闭弹窗
                                     this.dialogFormVisible=false;
@@ -310,13 +313,27 @@
 
                     }
                 });
-            },
+            }/*,
+            deletexx(data,id){
+                console.log('data',this.testData)
+                if (data&&data.length>0){
+                    let  index=data.findIndex(d =>d.id ===id);
+                    if (index==-1){
+                        for (let i=0;i<data.length;i++){
+                            this.deletexx(data[i].children,id);
+                        }
+                    } else{
+                     let deleteId=data[index].id;
+                        data.splice(index,1)
+                    }
+                }
+            }*/,
             deleteDic(data,node){
                 this.$confirm('此操作将删除该字典, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
-                }).then(axios.delete('admin/dictionary/'+data.id,{}).then(res=>{
+                }).then(request.delete(data.id)).then(res=>{
                     if (res.data.code="000000"){
                         const parent=node.parent;
                         const children=parent.childNodes;
@@ -329,7 +346,7 @@
                     }else {
                         this.$message.warning(res.data.msg);
                     }
-                })).catch(() => {
+                }).catch(() => {
                     this.$message({
                         type: 'info',
                         message: '已取消删除'
@@ -349,7 +366,7 @@
                 </span>);
             },
            loadData(){
-               axios.get('admin/dictionary').then(res=>{
+               request.tree().then(res=>{
                    if (res.data.code="000000"){
                      this.nodeData=res.data.data;
                    }else {
@@ -383,11 +400,44 @@
                     label: 'name',
                     isLeaf: 'leaf'
                 },
-                nodeData:{},
+                 /*testData:[
+                    {
+                        id:"x_0",
+                        children:[
+                            {
+                                id:'x_0_0',
+                                children:[]
+                            },
+                            {
+                                id:'x_0_1',
+                                children:[
+                                    {
+                                        id:'x_0_1_0',
+                                        children:[]
+                                    }
+                                ]
+                            }
+                        ]
+                    },{
+                        id:'x_1',
+                        children:[
+                            {
+                                id:'x_1_0',
+                                children:[
+                                    {
+                                        id:'x_1_0_0',
+                                        children:[]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],*/
+                nodeData:[],
                 formData: {
                     id:null,
                     name:'',
-                    state:1,
+                    state:"1",
                     createTime:null,
                     updateTime:null,
                     createUserName:'',

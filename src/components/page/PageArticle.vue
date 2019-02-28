@@ -18,7 +18,7 @@
                     clearable
                     @change="handleChange">
                 </el-cascader>
-                <el-select v-model="pageRequest.condition.type"placeholder="类型" class="handle-select mr10">
+                <el-select v-model="pageRequest.condition.type" placeholder="类型" class="handle-select mr10">
                     <el-option  label="全部" value="" key=""></el-option>
                     <el-option  label="资源" value=0 key=0></el-option>
                     <el-option  label="文章" value=1 key=1></el-option>
@@ -38,6 +38,23 @@
                 <el-select v-model="pageRequest.condition.typeChild" placeholder="三级资源" class="handle-select mr10">
                     <el-option v-for="item in childArr" :label="item.name" :value="item.id" :key="item.id"></el-option>
                 </el-select>-->
+                <el-date-picker
+                    v-model="pageRequest.condition.staTime"
+                    type="datetime"
+                    placeholder="开始时间"
+                    align="right"
+                    value-format="timestamp"
+                    :picker-options="pickerOptions2">
+                </el-date-picker>
+                <span>-----</span>
+                <el-date-picker
+                    v-model="pageRequest.condition.endTime"
+                    type="datetime"
+                    placeholder="截止时间"
+                    align="right"
+                    value-format="timestamp"
+                    :picker-options="pickerOptions2">
+                </el-date-picker>
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
@@ -67,7 +84,7 @@
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="total">
+                <el-pagination @current-change="handleCurrentChange" :background="true"  layout="prev, pager, next" :total="total" :current-page="pageRequest.nowPage">
                 </el-pagination>
             </div>
         </div>
@@ -78,7 +95,7 @@
                     type="textarea"
                     :rows="2"
                     placeholder="请输入内容"
-                    v-model="this.checkResult">
+                    v-model="article.checkResult">
                 </el-input>
                  <span slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="submit()">提交</el-button>
@@ -122,7 +139,8 @@
 <script>
     import {formatDate} from "../common/formatDate.js";
     import {formatUrl} from "../common/formatUrl.js";
-    import axios from 'axios'
+    import request from "../../api/article";
+    import front from "../../api/ditionary"
     export default {
         name: 'basetable',
         filters:{
@@ -136,12 +154,34 @@
         },
         data() {
             return {
+                pickerOptions2: {
+                    shortcuts: [{
+                        text: '今天',
+                        onClick(picker) {
+                            picker.$emit('pick', new Date());
+                        }
+                    }, {
+                        text: '昨天',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', date);
+                        }
+                    }, {
+                        text: '一周前',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', date);
+                        }
+                    }]
+                },
                 //文章数组列表
                 articleArr:[],
                 //资源分类列表
                 resourceTypeArr:[{
-                    id:null,
-                    name:'',
+                    id:'',
+                    name:'全部',
                     children:[]
                 }
                 ],
@@ -154,11 +194,13 @@
                     orderCondition:[],
                     desc:true,
                     condition:{
-                        state:'',
+                        state:"0",
                         typeGrandFather:'',
                         typeFather:'',
                         typeChild:'',
-                        type:''
+                        type:'',
+                        staTime:'',
+                        endTime:''
                     }
                 },
                 props:{
@@ -188,7 +230,7 @@
                 idx: -1
             }
         },
-        created() {
+        mounted() {
             this.getResourceType();
             this.getData();
         },
@@ -214,7 +256,6 @@
                 this.pageRequest.condition.typeGrandFather='';
                 this.pageRequest.condition.typeFather='';
                 this.pageRequest.condition.typeChild='';
-                console.log("value",value)
               if (value&&value.length>0){
                   for (let i=0;i<value.length;i++){
                       if (i==0){
@@ -228,14 +269,15 @@
                       }
                   }
               }
-              console.log("condition", this.pageRequest.condition)
             },
             //获取资源类型
             getResourceType(){
-                axios.get('/front/dictionary/tree/2').then(res=>{
+                front.getChildTree(2).then(res=>{
                     if (res.data.result='00000000'){
-                        this.resourceTypeArr=res.data.data
-                        console.log("arr",this.resourceTypeArr)
+                        let result=res.data.data;
+                        if (result&&result.length>0){
+                            this.resourceTypeArr=this.resourceTypeArr.concat(result)
+                        }
                     } else {
                         this.$message.error(res.data.msg);
                     }
@@ -249,10 +291,10 @@
                 this.getData();
             },
             pass(){
-                this.update(1,this.checkResult)
+                this.update(1,this.article.checkResult)
             },
             update(state,result){
-              axios.patch('/admin//resource/update',{
+              request.update({
                   id:this.article.id,
                   state:state,
                   checkResult:result
@@ -277,11 +319,11 @@
             //取消不通过审核
             cancel(){
                 this.resultVisible=false;
-                this.checkResult="";
+                this.article.checkResult="";
             },
             //提交不通过
             submit(){
-               this.update(2,this.article.result);
+               this.update(2,this.article.checkResult);
             },
             //格式化类型
             formatType(row){
@@ -313,7 +355,7 @@
             },
             // 获取数据
             getData() {
-               axios.post('/admin//resource/pageResource',this.pageRequest).then(res=>{
+               request.loadData(this.pageRequest).then(res=>{
                    if (res.data.code="000000"){
                        this.articleArr=res.data.data.list;
                        this.total=res.data.data.total;
@@ -331,12 +373,19 @@
                })
             },
             search(){
+                //时间判断
+                if (this.pageRequest.condition.staTime&&this.pageRequest.condition.endTime){
+                    if (this.pageRequest.condition.staTime>this.pageRequest.condition.endTime){
+                        this.$message.warning("开始时间不能大于结束时间");
+                        return;
+                    }
+                }
+                this.pageRequest.nowPage=1
                this.getData();
             },
             //资源详情
             detail(index, row) {
                 this.dialogFormVisible=true;
-               console.log("row",row)
                 this.article=row;
             },
             handleSelectionChange(val) {

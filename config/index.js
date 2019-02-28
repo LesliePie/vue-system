@@ -1,25 +1,24 @@
 'use strict'
 // Template version: 1.2.7
 // see http://vuejs-templates.github.io/webpack for documentation.
-
 const path = require('path')
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        '/admin':{
-            target:'http://localhost:90/',
+        '/system':{
+            target:'http://localhost:90',
+            //target:'http://10.0.0.19:8099/',
             changeOrigin:true,
             pathRewrite:{
-                '/admin':''
+                '/system':''
             },
 
       },
         '/front': {
-            target: 'http://www.shihu45.com:83/',
+            target: 'http://api.shihu45.com/dev/',
             changeOrigin: true,
             pathRewrite:{
                 '/front':''
@@ -62,8 +61,6 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: './',
-
     /**
      * Source Maps
      */
